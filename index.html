@@ -1,162 +1,473 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="dark">
+
 <head>
-<meta charset="UTF-8">
-<title>Viveka 5.0 – Live Registration Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viveka 5.0 – Live Registration Dashboard</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#020617;
-  color:white;
-  text-align:center;
-}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-h1{
-  margin-top:20px;
-}
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
-.big{
-  font-size:60px;
-  font-weight:bold;
-  margin-top:10px;
-}
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            'space-grotesk': ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            background: '#020617',
+            'neon-cyan': '#00f0ff',
+            'neon-orange': '#ff4d00',
+            'glass-bg': 'rgba(255, 255, 255, 0.05)',
+            'glass-border': 'rgba(255, 255, 255, 0.1)',
+          },
+          animation: {
+            'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s linear infinite',
+          },
+          keyframes: {
+            'pulse-glow': {
+              '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(0, 240, 255, 0.5)' },
+              '50%': { opacity: '.8', boxShadow: '0 0 10px rgba(0, 240, 255, 0.2)' },
+            },
+            'shimmer': {
+              '0%': { transform: 'translateX(-150%)' },
+              '100%': { transform: 'translateX(350%)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
 
-.progress{
-  width:80%;
-  background:#1e293b;
-  margin:20px auto;
-  border-radius:30px;
-  overflow:hidden;
-}
+  <style>
+    body {
+      background-color: #020617;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.1), transparent 70%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+    }
 
-.bar{
-  height:24px;
-  width:0%;
-  background:#22c55e;
-  transition:1s;
-}
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
 
-#events{
-  margin-top:20px;
-}
+    .text-glow {
+      text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    }
 
-.card{
-  background:#0f172a;
-  padding:15px;
-  margin:10px;
-  border-radius:12px;
-  display:inline-block;
-  min-width:200px;
-  box-shadow:0 0 10px rgba(0,0,0,0.5);
-}
-</style>
+    .neon-border {
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+      background-size: 1000px 100%;
+      animation: shimmer 2s infinite linear;
+    }
+  </style>
 </head>
 
-<body>
+<body class="min-h-screen relative overflow-x-hidden selection:bg-neon-cyan/30 selection:text-neon-cyan pb-20">
 
-<h1>Viveka - The Intelligence 5.0 - Live Dashboard</h1>
+  <main class="container mx-auto px-4 pt-10 md:pt-16">
 
-<div class="big">
-  Total Registration (<span id="total">0</span>)
-</div>
-<div>Target: 2000+</div>
+    <!-- Hero Section -->
+    <section class="text-center mb-12 md:mb-16 relative">
+      <div
+        class="inline-flex items-center gap-2 px-4 py-1 mb-6 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 backdrop-blur-sm">
+        <span class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></span>
+        <span class="text-neon-cyan font-mono text-[10px] md:text-xs tracking-wider uppercase">VIVEKA 5.0 • Live Stats
+          Dashboard</span>
+      </div>
 
-<div class="progress">
-  <div class="bar" id="progressBar"></div>
-</div>
+      <h1 class="text-4xl md:text-7xl font-bold font-space-grotesk tracking-tighter mb-4">
+        REGISTRATIONS <span class="text-neon-cyan text-glow">LIVE</span>
+      </h1>
 
-<canvas id="chart" width="600" height="300"></canvas>
+      <div class="glass-panel max-w-2xl mx-auto rounded-2xl p-6 md:p-8 mt-6 md:mt-8 border-t border-neon-cyan/20">
+        <div class="flex flex-col items-center">
+          <div class="flex items-center justify-between w-full mb-2">
+            <span class="text-gray-400 text-xs md:text-sm font-mono tracking-widest uppercase">Total
+              Participants</span>
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-neon-cyan"></span>
+              </span>
+              <span class="text-neon-cyan font-mono text-[10px] md:text-xs font-bold tracking-wider">LIVE</span>
+              <span id="liveClock" class="text-gray-400 font-mono text-[10px] md:text-xs ml-2">--:--:--</span>
+            </div>
+          </div>
+          <!-- Skeleton for Total -->
+          <div id="totalSkeleton" class="h-16 w-32 skeleton rounded-lg mb-2"></div>
+          <span id="total"
+            class="hidden text-5xl md:text-8xl font-bold font-space-grotesk text-white tracking-tight tabular-nums transition-all">0</span>
 
-<h2>Events</h2>
-<div id="events"></div>
+          <div
+            class="mt-4 text-neon-cyan font-mono text-xs md:text-sm bg-neon-cyan/10 px-3 py-1 rounded border border-neon-cyan/30">
+            TARGET: 2000+
+          </div>
+        </div>
 
-<script>
+        <!-- Progress Bar -->
+        <div class="relative w-full mt-6 md:mt-10">
+          <div class="h-4 md:h-5 bg-gray-900/50 rounded-full border border-white/5 relative overflow-visible">
 
-const TARGET = 2000;
+            <!-- 100% Marker (Behind bar) -->
+            <div
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] md:text-xs font-mono font-bold text-gray-600 z-0">
+              100%
+            </div>
 
-const URL="https://docs.google.com/spreadsheets/d/1z_arXbcnaqmxOt5caWUchEBDP_MFhMq2tUIfZgWkiRY/gviz/tq?tqx=out:json&gid=1087578816";
+            <!-- Moving Bar -->
+            <div id="progressBar"
+              class="h-full bg-gradient-to-r from-cyan-600 to-neon-cyan rounded-full relative overflow-hidden shadow-[0_0_15px_rgba(0,240,255,0.5)] transition-all duration-1000 ease-out"
+              style="width: 0%">
+              <!-- Glossy Shimmer Animation -->
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-[50%] skew-x-[-20deg] animate-shimmer"
+                style="filter: blur(5px);"></div>
+            </div>
 
-let chart=null;
+            <!-- Floating Tooltip/Bubble -->
+            <div id="progressBubble"
+              class="absolute top-1/2 -translate-y-1/2 -mt-8 md:-mt-10 transition-all duration-1000 ease-out flex flex-col items-center"
+              style="left: 0%">
+              <div
+                class="bg-black/90 border border-neon-cyan/50 text-neon-cyan text-xs md:text-sm font-bold px-2 py-1 rounded-lg shadow-[0_0_10px_rgba(0,240,255,0.3)] backdrop-blur-md">
+                <span id="progressText">0%</span>
+              </div>
+              <!-- Little triangle pointer -->
+              <div
+                class="w-0 h-0 border-l-[6px] border-l-transparent border-t-[6px] border-t-neon-cyan/50 border-r-[6px] border-r-transparent">
+              </div>
+            </div>
 
-function loadData(){
+          </div>
+        </div>
+      </div>
+    </section>
 
-fetch(URL)
-.then(res=>res.text())
-.then(data=>{
+    <!-- Chart Section -->
+    <section class="max-w-5xl mx-auto mb-16 md:mb-20 relative z-10">
+      <div class="glass-panel p-4 md:p-10 rounded-2xl md:rounded-3xl border border-white/5">
+        <h3 class="text-lg md:text-xl font-space-grotesk font-bold mb-6 flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-neon-cyan" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Registration Trends
+        </h3>
+        <div class="relative w-full h-[250px] md:h-[400px]">
+          <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </section>
 
-const json=JSON.parse(data.substring(47).slice(0,-2));
-const rows=json.table.rows;
+    <!-- EVENTS SECTION -->
+    <section class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+        <div class="text-center md:text-left">
+          <h2 class="text-3xl md:text-5xl font-bold font-space-grotesk">Event <span
+              class="text-neon-cyan">Breakdown</span></h2>
+          <div id="lastUpdated" class="text-xs text-gray-500 mt-2 font-mono">Updating...</div>
+        </div>
 
-let labels=[];
-let values=[];
-let html="";
+        <button onclick="toggleSort()"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:border-neon-cyan/50 hover:text-neon-cyan transition-all text-sm font-medium">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+          </svg>
+          <span id="sortLabel">Sort: High to Low</span>
+        </button>
+      </div>
 
-/*
-Your Sheet Structure:
-A = Events
-B = Registrations
-E1 = Total Registration
-*/
+      <!-- SKELETON LOADER (Hidden when data loads) -->
+      <div id="eventsSkeleton" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <!-- Generate 6 skeleton cards -->
+        <div class="glass-panel p-6 rounded-xl border border-white/5">
+          <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-full skeleton"></div>
+            <div class="w-12 h-8 rounded skeleton"></div>
+          </div>
+          <div class="w-3/4 h-6 rounded skeleton mb-4"></div>
+          <div class="w-full h-1 rounded-full skeleton"></div>
+        </div>
+        <div class="glass-panel p-6 rounded-xl border border-white/5">
+          <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-full skeleton"></div>
+            <div class="w-12 h-8 rounded skeleton"></div>
+          </div>
+          <div class="w-3/4 h-6 rounded skeleton mb-4"></div>
+          <div class="w-full h-1 rounded-full skeleton"></div>
+        </div>
+        <div class="glass-panel p-6 rounded-xl border border-white/5">
+          <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 rounded-full skeleton"></div>
+            <div class="w-12 h-8 rounded skeleton"></div>
+          </div>
+          <div class="w-3/4 h-6 rounded skeleton mb-4"></div>
+          <div class="w-full h-1 rounded-full skeleton"></div>
+        </div>
+      </div>
 
-// ✅ TOTAL from E1
-const total = rows[0]?.c[5]?.v || 0;
+      <!-- ACTUAL EVENTS GRID -->
+      <div id="events" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 hidden">
+        <!-- Event Cards will be injected here -->
+      </div>
+    </section>
 
-// ✅ Events start from row index 1
-for(let i=1;i<rows.length;i++){
+    <footer class="mt-20 border-t border-white/10 bg-black/40 py-10 text-center">
+      <p class="text-gray-500 text-sm">© 2026 Viveka 5.0. Powered by <span class="text-neon-cyan">TechFusion
+          Club</span>.
+      </p>
+    </footer>
 
- const event = rows[i]?.c[0]?.v;
- const count = rows[i]?.c[1]?.v;
+    <script>
+      const TARGET = 2000;
+      const URL = "https://docs.google.com/spreadsheets/d/1z_arXbcnaqmxOt5caWUchEBDP_MFhMq2tUIfZgWkiRY/gviz/tq?tqx=out:json&gid=1087578816";
 
- if(!event || count==null) continue;
+      let chart = null;
+      let eventsData = []; // Store fetched data
+      let isSortedByCount = true; // Default sort
 
- labels.push(event);
- values.push(count);
+      // Custom function to format large numbers
+      const formatNumber = (num) => {
+        return new Intl.NumberFormat('en-US').format(num);
+      }
 
- html+=`
- <div class="card">
-   <h3>${event}</h3>
-   <p>${count} registrations</p>
- </div>`;
-}
+      async function loadData() {
+        try {
+          const res = await fetch(URL);
+          const text = await res.text();
+          const json = JSON.parse(text.substring(47).slice(0, -2));
+          const rows = json.table.rows;
 
-document.getElementById("events").innerHTML=html;
-document.getElementById("total").innerText=total;
+          // Process Global Stats
+          const rawTotal = rows[0]?.c[5]?.v || 0;
 
-// Progress Bar
-let percent=Math.min((total/TARGET)*100,100);
-document.getElementById("progressBar").style.width=percent+"%";
+          // Update Total & Progress
+          const totalElement = document.getElementById("total");
+          const totalSkeleton = document.getElementById("totalSkeleton");
 
-// Chart
-if(chart) chart.destroy();
+          totalElement.innerText = formatNumber(rawTotal);
+          totalElement.classList.remove('hidden');
+          totalSkeleton.classList.add('hidden');
 
-chart=new Chart(document.getElementById("chart"),{
- type:"bar",
- data:{
-  labels:labels,
-  datasets:[{
-    label:"Registrations",
-    data:values
-  }]
- },
- options:{
-  responsive:true
- }
-});
+          let percent = Math.min((rawTotal / TARGET) * 100, 100);
 
-});
+          // Update Bar Width
+          document.getElementById("progressBar").style.width = percent + "%";
 
-}
+          // Update Bubble Position & Text
+          const bubble = document.getElementById("progressBubble");
+          const bubbleText = document.getElementById("progressText");
 
-// Initial Load
-loadData();
+          if (bubble && bubbleText) {
+            bubble.style.left = percent + "%";
+            // prevent bubble from going off-screen if too far right
+            if (percent > 90) {
+              bubble.style.transform = "translate(-100%, -50%)";
+            } else {
+              bubble.style.transform = "translate(-50%, -50%)";
+            }
+            bubbleText.innerText = percent.toFixed(1) + "%";
+          }
 
-// Auto Refresh every 10 seconds
-setInterval(loadData,10000);
+          // Process Events Data
+          eventsData = [];
+          let labels = [];
+          let values = [];
 
-</script>
+          for (let i = 1; i < rows.length; i++) {
+            const eventName = rows[i]?.c[0]?.v;
+            const count = rows[i]?.c[1]?.v;
 
+            if (!eventName || count == null) continue;
+
+            eventsData.push({ name: eventName, count: count });
+            labels.push(eventName);
+            values.push(count);
+          }
+
+          renderEvents();
+          updateChart(labels, values);
+          updateTimestamp();
+
+          // Hide Skeleton Grid, Show Real Grid
+          document.getElementById("eventsSkeleton").classList.add('hidden');
+          document.getElementById("events").classList.remove('hidden');
+
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+
+      function toggleSort() {
+        isSortedByCount = !isSortedByCount;
+
+        // Update Button Text
+        const btnLabel = document.getElementById("sortLabel");
+        btnLabel.innerText = isSortedByCount ? "Sort: High to Low" : "Sort: A-Z";
+
+        renderEvents();
+      }
+
+      function renderEvents() {
+        const container = document.getElementById("events");
+        let html = "";
+
+        // Sort Data
+        const sortedData = [...eventsData].sort((a, b) => {
+          if (isSortedByCount) {
+            return b.count - a.count; // High to Low
+          } else {
+            return a.name.localeCompare(b.name); // A-Z
+          }
+        });
+
+        sortedData.forEach(event => {
+          html += `
+            <div class="glass-panel p-6 rounded-xl hover:border-neon-cyan/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-neon-cyan/20 group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neon-cyan">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-bold font-space-grotesk text-white group-hover:text-neon-cyan transition-colors">${event.count}</span>
+                </div>
+                <h3 class="text-gray-300 font-medium text-lg leading-tight group-hover:text-white transition-colors">${event.name}</h3>
+                <div class="w-full bg-white/5 h-1 mt-4 rounded-full overflow-hidden">
+                        <div class="bg-gray-500 h-full rounded-full" style="width: ${Math.min((event.count / 200) * 100, 100)}%"></div> 
+                </div>
+            </div>`;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function updateChart(labels, values) {
+        const ctx = document.getElementById("chart").getContext('2d');
+
+        if (chart) {
+          chart.data.labels = labels;
+          chart.data.datasets[0].data = values;
+          chart.update();
+        } else {
+
+          // Chart.js Dark Theme Configuration
+          Chart.defaults.color = '#94a3b8';
+          Chart.defaults.font.family = 'Inter';
+
+          chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Registrations',
+                data: values,
+                backgroundColor: 'rgba(0, 240, 255, 0.6)',
+                borderColor: '#00f0ff',
+                borderWidth: 1,
+                borderRadius: 4,
+                hoverBackgroundColor: '#00f0ff',
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(2, 6, 23, 0.9)',
+                  titleColor: '#fff',
+                  bodyColor: '#cbd5e1',
+                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderWidth: 1,
+                  padding: 12,
+                  displayColors: false,
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.05)'
+                  },
+                  ticks: {
+                    font: { size: 12 }
+                  }
+                },
+                x: {
+                  grid: {
+                    display: false
+                  },
+                  ticks: {
+                    font: { size: 11 },
+                    maxRotation: 45,
+                    minRotation: 45
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('lastUpdated').innerHTML = `Last updated: <span class="text-neon-cyan">${timeString}</span>`;
+      }
+
+      function startLiveClock() {
+        const updateClock = () => {
+          const now = new Date();
+          const timeString = now.toLocaleTimeString([], { hour12: false });
+          document.getElementById('liveClock').innerText = timeString;
+        };
+        updateClock(); // Initial call
+        setInterval(updateClock, 1000);
+      }
+
+      startLiveClock();
+
+      // Initial Load
+      loadData();
+
+      // Auto Refresh every 10 seconds
+      setInterval(loadData, 10000);
+    </script>
 </body>
+
 </html>
