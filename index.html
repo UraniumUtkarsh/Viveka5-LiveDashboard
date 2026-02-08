@@ -250,9 +250,11 @@
       </p>
     </footer>
 
+    <!-- Load configuration from external file (keeps sensitive URLs out of HTML) -->
+    <script src="config.js"></script>
     <script>
       const TARGET = 2000;
-      const URL = "https://docs.google.com/spreadsheets/d/1z_arXbcnaqmxOt5caWUchEBDP_MFhMq2tUIfZgWkiRY/gviz/tq?tqx=out:json&gid=1087578816";
+      const URL = CONFIG.GOOGLE_SHEETS_URL;
 
       let chart = null;
       let eventsData = []; // Store fetched data
