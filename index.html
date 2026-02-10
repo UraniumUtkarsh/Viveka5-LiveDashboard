@@ -4,6 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="favicon_io/site.webmanifest">
+  <link rel="shortcut icon" href="favicon_io/favicon.ico">
+
   <title>Viveka 5.0 – Live Registration Dashboard</title>
 
   <!-- Tailwind CSS -->
@@ -108,6 +115,8 @@
         REGISTRATIONS <span class="text-neon-cyan text-glow">LIVE</span>
       </h1>
 
+      <span class="text-neon-cyan font-mono text-[12px] md:text-xs tracking-wider uppercase"><a href="https://www.vivekatheintelligence.in" _blank="true" target="_blank">www.vivekatheintelligence.in</a><span>
+
       <div class="glass-panel max-w-2xl mx-auto rounded-2xl p-6 md:p-8 mt-6 md:mt-8 border-t border-neon-cyan/20">
         <div class="flex flex-col items-center">
           <div class="flex items-center justify-between w-full mb-2">
@@ -125,8 +134,28 @@
           </div>
           <!-- Skeleton for Total -->
           <div id="totalSkeleton" class="h-16 w-32 skeleton rounded-lg mb-2"></div>
-          <span id="total"
+          <!--<span id="total"
             class="hidden text-5xl md:text-8xl font-bold font-space-grotesk text-white tracking-tight tabular-nums transition-all">0</span>
+            disabled on 10th feb-->
+          
+          <div class="flex items-end gap-4 md:gap-6">
+            <!-- Total Registration -->
+            <span id="total"
+              class="hidden text-5xl md:text-8xl font-bold font-space-grotesk text-white tracking-tight tabular-nums transition-all">0</span>
+
+            <!-- Estimated Footfall -->
+            <div id="footfallBox" class="hidden flex flex-col items-start mb-1">
+              <span class="text-[10px] md:text-xs text-gray-400 font-mono tracking-widest uppercase">
+                Estimated Footfall
+              </span>
+              <span id="footfall"
+                class="text-xl md:text-3xl font-space-grotesk text-neon-cyan tabular-nums">
+                0
+              </span>
+            </div>
+
+          </div>
+
 
           <div
             class="mt-4 text-neon-cyan font-mono text-xs md:text-sm bg-neon-cyan/10 px-3 py-1 rounded border border-neon-cyan/30">
@@ -245,8 +274,8 @@
     </section>
 
     <footer class="mt-20 border-t border-white/10 bg-black/40 py-10 text-center">
-      <p class="text-gray-500 text-sm">© 2026 Viveka 5.0. Powered by <span class="text-neon-cyan">TechFusion
-          Club</span>.
+      <p class="text-gray-500 text-sm">© 2026 Viveka 5.0. Powered by <span class="text-neon-cyan"><a href="https://instagram.com/techfusionclub_srmu" _blank="true" target="_blank">TechFusion
+          Club</a></span>.
       </p>
     </footer>
 
@@ -274,12 +303,21 @@
 
           // Process Global Stats
           const rawTotal = rows[0]?.c[5]?.v || 0;
+          const estimatedFootfall = rows[0]?.c[7]?.v || 0; 
 
           // Update Total & Progress
           const totalElement = document.getElementById("total");
           const totalSkeleton = document.getElementById("totalSkeleton");
 
           totalElement.innerText = formatNumber(rawTotal);
+          const footfallEl = document.getElementById("footfall");
+const footfallBox = document.getElementById("footfallBox");
+
+if (footfallEl && footfallBox) {
+  footfallEl.innerText = formatNumber(estimatedFootfall);
+  footfallBox.classList.remove("hidden");
+}
+
           totalElement.classList.remove('hidden');
           totalSkeleton.classList.add('hidden');
 
